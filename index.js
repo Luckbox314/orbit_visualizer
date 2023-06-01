@@ -2,7 +2,7 @@ var planet1_image = new Image();
 planet1_image.src = "sprites/p1.svg";
 var planet2_image = new Image();
 planet2_image.src = "sprites/p2.svg";
-var MASS_SIZE_RATIO = 10;
+var MASS_SIZE_RATIO = 700;
 var OBJECTIVE_ORBITAL_PERIOD = 5;
 var GRAVITATIONAL_CONSTANT = 1;
 var AREA_STEPS = 100;
@@ -13,20 +13,20 @@ var OrbitVisualizer = /** @class */ (function () {
         this.cachePos2 = { x: 0, y: 0 };
         console.log("Initializing App");
         this.canvas = document.getElementById('canvas');
-        this.canvas.width = 1200;
-        this.canvas.height = 1200;
+        this.canvas.width = 1000;
+        this.canvas.height = 1000;
         var ctx = this.canvas.getContext("2d");
         this.ctx = ctx;
         // this.debugCanvas = document.getElementById('debug-canvas') as HTMLCanvasElement;
         // this.debugCtx = this.debugCanvas.getContext("2d");
         // planets
         this.planet1 = {
-            mass: 10,
+            mass: 50,
             img: planet1_image,
             position: { x: 0, y: 0 }
         };
         this.planet2 = {
-            mass: 20,
+            mass: 50,
             img: planet2_image,
             position: { x: 0, y: 0 }
         };
@@ -58,8 +58,8 @@ var OrbitVisualizer = /** @class */ (function () {
         this.animationLoop();
     }
     OrbitVisualizer.prototype.drawPlanet = function (planet) {
-        var radious = Math.pow(planet.mass * MASS_SIZE_RATIO, 1 / 3);
-        this.ctx.drawImage(planet.img, planet.position.x - planet.mass * radious, planet.position.y - planet.mass * radious, planet.mass * 2 * radious, planet.mass * 2 * radious);
+        var radious = 1 + Math.pow(planet.mass * MASS_SIZE_RATIO, 1 / 3);
+        this.ctx.drawImage(planet.img, planet.position.x - radious, planet.position.y - radious, 2 * radious, 2 * radious);
     };
     OrbitVisualizer.prototype.simulation = function (dt) {
         // console.log("simulation")
@@ -171,6 +171,24 @@ var OrbitVisualizer = /** @class */ (function () {
     };
     OrbitVisualizer.prototype.update = function () {
     };
+    // private graph(data: Array<number>) {
+    //     console.log("graphing");
+    //     let max = Math.max(...data);
+    //     for (let i = 0; i < data.length; i++) {
+    //         let x = i * this.debugCanvas.width / data.length;
+    //         let y = this.debugCanvas.height - data[i] / max * this.debugCanvas.height;
+    //         let w = this.debugCanvas.width / data.length;
+    //         let h = data[i] / max * this.debugCanvas.height;
+    //         this.debugCtx.beginPath();
+    //         this.debugCtx.rect(x, y, w, h);
+    //         this.debugCtx.fill();
+    //         this.debugCtx.stroke();
+    //     }
+    // }
+    OrbitVisualizer.prototype.setMassRatio = function (massRatio) {
+        this.planet1.mass = 50 + massRatio;
+        this.planet2.mass = 50 - massRatio;
+    };
     return OrbitVisualizer;
 }());
 function degrees_to_radians(degrees) {
@@ -186,7 +204,12 @@ function distance(a, b) {
 //wait for planets to load
 planet1_image.onload = function () {
     return planet2_image.onload = function () {
-        return new OrbitVisualizer();
+        var orbitVisualizer = new OrbitVisualizer();
+        var massSlider = document.getElementById("mass-slider");
+        massSlider.oninput = function () {
+            var mass = parseFloat(massSlider.value);
+            orbitVisualizer.setMassRatio(mass);
+        };
     };
 };
 //# sourceMappingURL=index.js.map

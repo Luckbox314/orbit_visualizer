@@ -3,7 +3,7 @@ planet1_image.src = "sprites/p1.svg";
 const planet2_image = new Image();
 planet2_image.src = "sprites/p2.svg";
 
-const MASS_SIZE_RATIO = 10;
+const MASS_SIZE_RATIO = 700;
 const OBJECTIVE_ORBITAL_PERIOD = 5;
 const GRAVITATIONAL_CONSTANT = 1;
 const AREA_STEPS = 100;
@@ -42,8 +42,8 @@ class OrbitVisualizer {
         console.log("Initializing App");
 
         this.canvas = document.getElementById('canvas') as HTMLCanvasElement;
-        this.canvas.width = 1200;
-        this.canvas.height = 1200;
+        this.canvas.width = 1000;
+        this.canvas.height = 1000;
         let ctx = this.canvas.getContext("2d");
         this.ctx = ctx;
 
@@ -52,12 +52,12 @@ class OrbitVisualizer {
 
         // planets
         this.planet1 = {
-            mass: 10,
+            mass: 50,
             img: planet1_image,
             position: {x: 0, y: 0}
         };
         this.planet2 = {
-            mass: 20,
+            mass: 50,
             img: planet2_image,
             position: {x: 0, y: 0}
         };
@@ -105,13 +105,13 @@ class OrbitVisualizer {
     }
 
     private drawPlanet(planet: Planet) {
-        const radious = Math.pow(planet.mass * MASS_SIZE_RATIO, 1/3) ;
+        const radious = 1 + Math.pow(planet.mass * MASS_SIZE_RATIO, 1/3) ;
         this.ctx.drawImage(
             planet.img,
-            planet.position.x - planet.mass * radious ,
-            planet.position.y - planet.mass * radious,
-            planet.mass * 2*radious,
-            planet.mass * 2*radious
+            planet.position.x - radious ,
+            planet.position.y - radious,
+            2*radious,
+            2*radious
         );
     }
 
@@ -269,6 +269,11 @@ class OrbitVisualizer {
     //     }
     // }
 
+    public setMassRatio(massRatio) {
+        this.planet1.mass = 50 + massRatio;
+        this.planet2.mass = 50 - massRatio;
+    }
+
 }
 
 
@@ -286,7 +291,18 @@ function distance(a : {x:number, y:number}, b: {x:number, y:number}) {
     return Math.sqrt((a.x - b.x)**2 + (a.y - b.y)**2);
 }
 
+
+
 //wait for planets to load
 planet1_image.onload = () =>
 planet2_image.onload = () =>
-new OrbitVisualizer();
+{
+    const orbitVisualizer = new OrbitVisualizer();
+    const massSlider = document.getElementById("mass-slider") as HTMLInputElement;
+    massSlider.oninput = () => {
+        const mass = parseFloat(massSlider.value);
+        orbitVisualizer.setMassRatio(mass);
+    }
+}
+
+
