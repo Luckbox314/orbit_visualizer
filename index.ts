@@ -3,10 +3,10 @@ planet1_image.src = "sprites/p1.svg";
 const planet2_image = new Image();
 planet2_image.src = "sprites/p2.svg";
 
-const MASS_SIZE_RATIO = 50;
+const MASS_SIZE_RATIO = 10;
 const OBJECTIVE_ORBITAL_PERIOD = 5;
 const GRAVITATIONAL_CONSTANT = 1;
-const AREA_STEPS = 360;
+const AREA_STEPS = 100;
 
 
 interface Planet {
@@ -31,39 +31,49 @@ class OrbitVisualizer {
     private area: number;
     private area_progress: number;
     private frame: number;
+    private lastArea: number;
+
+    // private debugCanvas: HTMLCanvasElement;
+    // private debugCtx: CanvasRenderingContext2D;
+
+    private iteration: number;
 
     constructor() {
         console.log("Initializing App");
 
         this.canvas = document.getElementById('canvas') as HTMLCanvasElement;
-        this.canvas.width = 1000;
-        this.canvas.height = 1000;
-        let ctx = canvas.getContext("2d");
+        this.canvas.width = 1200;
+        this.canvas.height = 1200;
+        let ctx = this.canvas.getContext("2d");
         this.ctx = ctx;
+
+        // this.debugCanvas = document.getElementById('debug-canvas') as HTMLCanvasElement;
+        // this.debugCtx = this.debugCanvas.getContext("2d");
 
         // planets
         this.planet1 = {
-            mass: 0.5,
+            mass: 10,
             img: planet1_image,
             position: {x: 0, y: 0}
         };
         this.planet2 = {
-            mass: 0.5,
-            img: planet2_image
+            mass: 20,
+            img: planet2_image,
+            position: {x: 0, y: 0}
         };
 
         // initial conditions
-        this.barycenter = {x: 500, y: 500};
-        this.timeSpeed = 60;
-        this.excentricity = 0.75;
-        this.semiMajorAxis = 200;
+        this.barycenter = {x: this.canvas.width/2, y: this.canvas.width/2};
+        this.timeSpeed = 30;
+        this.excentricity = 0.5;
+        this.semiMajorAxis = 400;
 
         this.areas = Array() as [number];
         this.angles_sample = Array() as [number];
 
 
-        for (let i = 0; i < 360; i++) {
-            this.angles_sample.push(degrees_to_radians(i));
+        for (let i = 0; i <= AREA_STEPS; i++) {
+            this.angles_sample.push(degrees_to_radians(i * 360 / AREA_STEPS));
         }
 
         this.angles_sample.forEach(angle => {
@@ -73,8 +83,10 @@ class OrbitVisualizer {
         console.log(this.angles_sample);
         console.log(this.areas);
 
+        console.log("initializing graphing")
 
-        this.area = this.semiMajorAxis**2 *  Math.sqrt(1 - this.excentricity**2) * Math.PI;
+
+        this.area = Math.round(this.semiMajorAxis**2 *  Math.sqrt(1 - this.excentricity**2) * Math.PI);
         console.log(this.area);
 
         this.area_progress = 0
@@ -86,38 +98,68 @@ class OrbitVisualizer {
         // start animation
         this.time = Date.now();
         this.frame = 0;
-        console.log("initializing animation Loop")
-        this.animationLoop();
+        console.log("initializing animation Loop");
+        this.iteration = 0;
+        this.lastArea = 0;
+        this.animationLoop();   
     }
 
     private drawPlanet(planet: Planet) {
+        const radious = Math.pow(planet.mass * MASS_SIZE_RATIO, 1/3) ;
         this.ctx.drawImage(
             planet.img,
-            planet.position.x - planet.mass * MASS_SIZE_RATIO / 2,
-            planet.position.y - planet.mass * MASS_SIZE_RATIO / 2,
-            planet.mass * MASS_SIZE_RATIO,
-            planet.mass * MASS_SIZE_RATIO
+            planet.position.x - planet.mass * radious ,
+            planet.position.y - planet.mass * radious,
+            planet.mass * 2*radious,
+            planet.mass * 2*radious
         );
     }
+
+    private cachePos : {x: number, y: number} = {x: 0, y:0};
+    private cachePos2 : {x: number, y: number} = {x: 0, y:0};
 
     private simulation(dt: number) {
         // console.log("simulation")
         // sets the position of the planets acording to the excentricity and semi major axis
 
         this.frame += dt;
-
-        if (this.frame >= 1/this.timeSpeed){
-            this.frame = 0;
+        if (this.cachePos.x == 0 && this.cachePos.y == 0) {
+            // Calculating next frame;
             const angle = this.angle(this.area_progress);
-            this.area_progress += this.area / AREA_STEPS;
+            this.area_progress += Math.round(this.area / AREA_STEPS);
             if (this.area_progress > this.area) this.area_progress = 0;
     
-            let new_pos1 = {x:0, y:0};
-            new_pos1.x = this.barycenter.x + this.r((angle)) * Math.cos((angle));
-            new_pos1.y = this.barycenter.y + this.r((angle)) * Math.sin((angle));
+            this.cachePos.x = this.barycenter.x + this.r((angle)) * Math.cos((angle));
+            this.cachePos.y = this.barycenter.y + this.r((angle)) * Math.sin((angle));
+
+            this.cachePos2.x = this.barycenter.x - this.r((angle)) * this.planet1.mass/this.planet2.mass * Math.cos((angle));
+            this.cachePos2.y = this.barycenter.y - this.r((angle)) * this.planet1.mass/this.planet2.mass * Math.sin((angle));
+        }
+
+        if (this.frame >= 1/this.timeSpeed){
+            // console.log(`Iteration: ${this.iteration++} Area: ${this.area_progress}`)
+            this.frame = 0;
+
+            if (this.cachePos.x == 0 && this.cachePos.y == 0) {
+                // Calculating next frame;
+                const angle = this.angle(this.area_progress);
+                this.area_progress += Math.round(this.area / AREA_STEPS);
+                if (this.area_progress > this.area) this.area_progress = 0;
+        
+                this.cachePos.x = this.barycenter.x + this.r((angle)) * Math.cos((angle));
+                this.cachePos.y = this.barycenter.y + this.r((angle)) * Math.sin((angle));
+
+                this.cachePos2.x = this.barycenter.x - this.r((angle)) * this.planet1.mass/this.planet2.mass * Math.cos((angle));
+                this.cachePos2.y = this.barycenter.y - this.r((angle)) * this.planet1.mass/this.planet2.mass * Math.sin((angle));
+            }
     
-            // console.log(angle);
-            this.planet1.position = new_pos1;
+
+            // console.log(`Angle: ${angle}`);
+            this.planet1.position.x = this.cachePos.x;
+            this.planet1.position.y = this.cachePos.y;
+            this.planet2.position = this.cachePos2;
+            this.cachePos.x = 0;
+            this.cachePos.y = 0;
         }
 
 
@@ -132,15 +174,27 @@ class OrbitVisualizer {
         if (x > Math.PI) {
             value += 2 * this.A(Math.PI);
         }
-        return value;
+        // aproximation of the value
+        return Math.round(value);
     }
 
     private angle(A) {
-        for (let i = 0; i < this.areas.length - 1; i++) {
-            if (A >= this.areas[i]) {
-                return degrees_to_radians((A - this.areas[i]) / (this.areas[i + 1] - this.areas[i]) + i)
-            }
+        let i = this.lastArea;
+        if (A > this.area) {
+            A = A % this.area;
         }
+        if (i >= AREA_STEPS - 1) i = 0;
+        if (i > 0 || A < this.area[i - 1]) i = 0;
+        while (A >= this.areas[i]) {
+            i++;
+        }
+        
+        this.lastArea = i;
+
+        const angle = ((A - this.areas[i - 1]) / (this.areas[i] - this.areas[i - 1]) + i - 1) / (AREA_STEPS) * 360
+        // console.log(`A: ${A} i: ${i} area[i]: ${this.areas[i]} area[i-1]: ${this.areas[i-1]} angle: ${angle}`);
+        return degrees_to_radians(angle);
+
     }
 
     private r(angle) {
@@ -152,18 +206,22 @@ class OrbitVisualizer {
 
     private draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.drawPlanet(this.planet1);
-        // this.drawPlanet(this.planet2);
         // draw bari center
         this.ctx.beginPath();
         this.ctx.arc(this.barycenter.x, this.barycenter.y, 5, 0, 2 * Math.PI);
         this.ctx.stroke();
 
         let foci1 = {x: this.barycenter.x , y: this.barycenter.y};
-        let foci2 = {x: this.barycenter.x - 2 * this.semiMajorAxis * this.excentricity, y: this.barycenter.y};
         let center1 = {x: this.barycenter.x -  this.semiMajorAxis * this.excentricity, y: this.barycenter.y};
+        const semiMajorAxis2 = this.semiMajorAxis * this.planet1.mass/this.planet2.mass;
+        let center2 = {x: this.barycenter.x + semiMajorAxis2 * this.excentricity, y: this.barycenter.y};
+
+
         const a = this.semiMajorAxis;
         const b = this.semiMajorAxis *  Math.sqrt(1 - this.excentricity * this.excentricity);
+
+        const a2 = semiMajorAxis2;
+        const b2 = semiMajorAxis2 *  Math.sqrt(1 - this.excentricity * this.excentricity);
 
         this.ctx.beginPath();
         this.ctx.arc(foci1.x, foci1.y, 5, 0, 2 * Math.PI);
@@ -171,13 +229,15 @@ class OrbitVisualizer {
         this.ctx.fill();
 
         this.ctx.beginPath();
-        this.ctx.arc(foci2.x, foci2.y, 5, 0, 2 * Math.PI);
-        this.ctx.stroke();
-        this.ctx.fill();
-
-        this.ctx.beginPath();
         this.ctx.ellipse(center1.x, center1.y, a, b, 0, 0, 2 * Math.PI);
         this.ctx.stroke();
+
+        this.ctx.beginPath();
+        this.ctx.ellipse(center2.x, center2.y, a2, b2, 0, 0, 2 * Math.PI);
+        this.ctx.stroke();
+
+        this.drawPlanet(this.planet1);
+        this.drawPlanet(this.planet2);
     }
 
     private animationLoop() {
@@ -193,6 +253,22 @@ class OrbitVisualizer {
 
     }
 
+    // private graph(data: Array<number>) {
+    //     console.log("graphing");
+    //     let max = Math.max(...data);
+        
+    //     for (let i = 0; i < data.length; i++) {
+    //         let x = i * this.debugCanvas.width / data.length;
+    //         let y = this.debugCanvas.height - data[i] / max * this.debugCanvas.height;
+    //         let w = this.debugCanvas.width / data.length;
+    //         let h = data[i] / max * this.debugCanvas.height;
+    //         this.debugCtx.beginPath();
+    //         this.debugCtx.rect(x, y, w, h);
+    //         this.debugCtx.fill();
+    //         this.debugCtx.stroke();
+    //     }
+    // }
+
 }
 
 
@@ -204,6 +280,10 @@ function degrees_to_radians(degrees)
 
 function radians_to_degrees(radians){
     return radians * 180 / Math.PI;
+}
+
+function distance(a : {x:number, y:number}, b: {x:number, y:number}) {
+    return Math.sqrt((a.x - b.x)**2 + (a.y - b.y)**2);
 }
 
 //wait for planets to load
