@@ -6,7 +6,7 @@ planet2_image.src = "sprites/p2.svg";
 const MASS_SIZE_RATIO = 400;
 const OBJECTIVE_ORBITAL_PERIOD = 5;
 const GRAVITATIONAL_CONSTANT = 1;
-const AREA_STEPS = 100;
+const AREA_STEPS = 200;
 const SPEED = 60;
 
 
@@ -69,7 +69,6 @@ class OrbitVisualizer {
         };
 
         // initial conditions
-        this.timeSpeed = SPEED;
         this.angles_sample = Array() as [number];
 
 
@@ -79,12 +78,7 @@ class OrbitVisualizer {
 
         this.setParameters(0.5, 230);
         // console.log(this.area);
-
         this.progress = 0
-
-        
-
-
 
         // start animation
         this.time = Date.now();
@@ -102,6 +96,8 @@ class OrbitVisualizer {
         this.angles_sample.forEach(angle => {
             this.areas.push(this.A(angle));
         });
+        this.timeSpeed =   SPEED  / ((semiMajorAxis/230) ** 1.5);
+        // console.log(this.timeSpeed);
         // console.log(this.areas);
     }
 
@@ -122,12 +118,12 @@ class OrbitVisualizer {
     private simulation(dt: number) {
         // console.log("simulation")
         // sets the position of the planets acording to the excentricity and semi major axis
-
+        // console.log(`step: ${ (1/this.timeSpeed) / (this.semiMajorAxis / 230)** 1.5 }`)
         this.frame += dt;
         if (this.cachePos.x == 0 && this.cachePos.y == 0) {
             // Calculating next frame;
             const angle = this.angle(this.progress/100 * this.area);
-            this.progress += Math.round(100 / AREA_STEPS);
+            this.progress += 100 / AREA_STEPS / (this.semiMajorAxis / 230)** 1.5;
             if (this.progress >= 100) this.progress = 0;
     
             this.cachePos.x = this.barycenter.x + this.r((angle)) * Math.cos((angle));
@@ -137,7 +133,7 @@ class OrbitVisualizer {
             this.cachePos2.y = this.barycenter.y - this.r((angle)) * this.planet1.mass/this.planet2.mass * Math.sin((angle));
         }
 
-        if (this.frame >= 1/this.timeSpeed){
+        if (this.frame >= (1/this.timeSpeed) / (this.semiMajorAxis / 230)** 1.5 ){
             // console.log(`Iteration: ${this.iteration++} Area: ${this.area_progress}`)
             this.frame = 0;
 
@@ -145,7 +141,7 @@ class OrbitVisualizer {
                 // Calculating next frame;
                 const angle = this.angle(this.progress/100 * this.area);
                 
-                this.progress += Math.round(100 / AREA_STEPS);
+                this.progress += Math.round(100 / AREA_STEPS / (this.semiMajorAxis / 230)** 1.5);
                 if (this.progress >= 100) this.progress = 0;
         
                 this.cachePos.x = this.barycenter.x + this.r((angle)) * Math.cos((angle));
@@ -221,7 +217,6 @@ class OrbitVisualizer {
         this.ctx.strokeStyle = this.orbitColor;
         this.ctx.fillStyle = this.orbitColor;
 
-        let foci1 = {x: this.barycenter.x , y: this.barycenter.y};
         let center1 = {x: this.barycenter.x -  this.semiMajorAxis * this.excentricity, y: this.barycenter.y};
         const semiMajorAxis2 = this.semiMajorAxis * this.planet1.mass/this.planet2.mass;
         let center2 = {x: this.barycenter.x + semiMajorAxis2 * this.excentricity, y: this.barycenter.y};
