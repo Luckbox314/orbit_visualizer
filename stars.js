@@ -50,10 +50,14 @@ var Star = /** @class */ (function () {
     return Star;
 }());
 var starDrawer = new StarDrawer();
+var width = window.innerWidth;
 window.onload = function () {
     starDrawer.resize();
 };
 window.onresize = function () {
+    if (width == window.innerWidth)
+        return;
+    width = window.innerWidth;
     starDrawer.resize();
 };
 //# sourceMappingURL=stars.js.map

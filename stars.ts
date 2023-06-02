@@ -62,13 +62,14 @@ class Star {
 }
 
 const starDrawer = new StarDrawer();
-
+let width = window.innerWidth;
 
 window.onload = () => {
     starDrawer.resize();
 }
 
 window.onresize = () => {
+    if (width == window.innerWidth) return;
+    width = window.innerWidth;
     starDrawer.resize()
-
 }
