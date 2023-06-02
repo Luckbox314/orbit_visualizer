@@ -20,8 +20,8 @@ var OrbitVisualizer = /** @class */ (function () {
         var ctx = this.canvas.getContext("2d");
         this.ctx = ctx;
         this.ctx.lineWidth = 6;
-        this.ctx.strokeStyle = "#625d80";
-        this.ctx.fillStyle = "#625d80";
+        this.orbitColor = "#625d80";
+        this.baricenterColor = "#9acea4";
         // this.debugCanvas = document.getElementById('debug-canvas') as HTMLCanvasElement;
         // this.debugCtx = this.debugCanvas.getContext("2d");
         // planets
@@ -142,9 +142,14 @@ var OrbitVisualizer = /** @class */ (function () {
     OrbitVisualizer.prototype.draw = function () {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         // draw bari center
+        this.ctx.strokeStyle = this.baricenterColor;
+        this.ctx.fillStyle = this.baricenterColor;
         this.ctx.beginPath();
         this.ctx.arc(this.barycenter.x, this.barycenter.y, 5, 0, 2 * Math.PI);
         this.ctx.stroke();
+        this.ctx.fill();
+        this.ctx.strokeStyle = this.orbitColor;
+        this.ctx.fillStyle = this.orbitColor;
         var foci1 = { x: this.barycenter.x, y: this.barycenter.y };
         var center1 = { x: this.barycenter.x - this.semiMajorAxis * this.excentricity, y: this.barycenter.y };
         var semiMajorAxis2 = this.semiMajorAxis * this.planet1.mass / this.planet2.mass;
@@ -153,10 +158,6 @@ var OrbitVisualizer = /** @class */ (function () {
         var b = this.semiMajorAxis * Math.sqrt(1 - this.excentricity * this.excentricity);
         var a2 = semiMajorAxis2;
         var b2 = semiMajorAxis2 * Math.sqrt(1 - this.excentricity * this.excentricity);
-        this.ctx.beginPath();
-        this.ctx.arc(foci1.x, foci1.y, 5, 0, 2 * Math.PI);
-        this.ctx.stroke();
-        this.ctx.fill();
         this.ctx.beginPath();
         this.ctx.ellipse(center1.x, center1.y, a, b, 0, 0, 2 * Math.PI);
         this.ctx.stroke();

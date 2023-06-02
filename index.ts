@@ -33,6 +33,8 @@ class OrbitVisualizer {
     private progress: number;
     private frame: number;
     private lastArea: number;
+    private baricenterColor: string;
+    private orbitColor: string;
 
     // private debugCanvas: HTMLCanvasElement;
     // private debugCtx: CanvasRenderingContext2D;
@@ -47,8 +49,9 @@ class OrbitVisualizer {
         let ctx = this.canvas.getContext("2d");
         this.ctx = ctx;
         this.ctx.lineWidth = 6;
-        this.ctx.strokeStyle = "#625d80";
-        this.ctx.fillStyle = "#625d80";
+        this.orbitColor = "#625d80";
+        this.baricenterColor = "#9acea4";
+
 
         // this.debugCanvas = document.getElementById('debug-canvas') as HTMLCanvasElement;
         // this.debugCtx = this.debugCanvas.getContext("2d");
@@ -207,9 +210,16 @@ class OrbitVisualizer {
     private draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         // draw bari center
+        this.ctx.strokeStyle = this.baricenterColor;
+        this.ctx.fillStyle = this.baricenterColor;
+
         this.ctx.beginPath();
         this.ctx.arc(this.barycenter.x, this.barycenter.y, 5, 0, 2 * Math.PI);
         this.ctx.stroke();
+        this.ctx.fill();
+
+        this.ctx.strokeStyle = this.orbitColor;
+        this.ctx.fillStyle = this.orbitColor;
 
         let foci1 = {x: this.barycenter.x , y: this.barycenter.y};
         let center1 = {x: this.barycenter.x -  this.semiMajorAxis * this.excentricity, y: this.barycenter.y};
@@ -223,10 +233,6 @@ class OrbitVisualizer {
         const a2 = semiMajorAxis2;
         const b2 = semiMajorAxis2 *  Math.sqrt(1 - this.excentricity * this.excentricity);
 
-        this.ctx.beginPath();
-        this.ctx.arc(foci1.x, foci1.y, 5, 0, 2 * Math.PI);
-        this.ctx.stroke();
-        this.ctx.fill();
 
         this.ctx.beginPath();
         this.ctx.ellipse(center1.x, center1.y, a, b, 0, 0, 2 * Math.PI);
