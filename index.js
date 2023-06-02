@@ -2,21 +2,23 @@ var planet1_image = new Image();
 planet1_image.src = "sprites/p1.svg";
 var planet2_image = new Image();
 planet2_image.src = "sprites/p2.svg";
-var MASS_SIZE_RATIO = 700;
+var MASS_SIZE_RATIO = 400;
 var OBJECTIVE_ORBITAL_PERIOD = 5;
 var GRAVITATIONAL_CONSTANT = 1;
 var AREA_STEPS = 100;
 var SPEED = 60;
 var OrbitVisualizer = /** @class */ (function () {
     function OrbitVisualizer() {
+        // console.log("Initializing App");
         this.cachePos = { x: 0, y: 0 };
         this.cachePos2 = { x: 0, y: 0 };
-        console.log("Initializing App");
         this.canvas = document.getElementById('canvas');
-        this.canvas.width = 1000;
-        this.canvas.height = 1000;
+        this.setSize(1500);
         var ctx = this.canvas.getContext("2d");
         this.ctx = ctx;
+        this.ctx.lineWidth = 6;
+        this.ctx.strokeStyle = "#ffffff";
+        this.ctx.fillStyle = "#ffffff";
         // this.debugCanvas = document.getElementById('debug-canvas') as HTMLCanvasElement;
         // this.debugCtx = this.debugCanvas.getContext("2d");
         // planets
@@ -31,19 +33,18 @@ var OrbitVisualizer = /** @class */ (function () {
             position: { x: 0, y: 0 }
         };
         // initial conditions
-        this.barycenter = { x: this.canvas.width / 2, y: this.canvas.width / 2 };
         this.timeSpeed = SPEED;
         this.angles_sample = Array();
         for (var i = 0; i <= AREA_STEPS; i++) {
             this.angles_sample.push(degrees_to_radians(i * 360 / AREA_STEPS));
         }
-        this.setParameters(0.5, 400);
-        console.log(this.area);
+        this.setParameters(0.5, 150);
+        // console.log(this.area);
         this.progress = 0;
         // start animation
         this.time = Date.now();
         this.frame = 0;
-        console.log("initializing animation Loop");
+        // console.log("initializing animation Loop");
         this.iteration = 0;
         this.lastArea = 0;
         this.animationLoop();
@@ -57,7 +58,7 @@ var OrbitVisualizer = /** @class */ (function () {
         this.angles_sample.forEach(function (angle) {
             _this.areas.push(_this.A(angle));
         });
-        console.log(this.areas);
+        // console.log(this.areas);
     };
     OrbitVisualizer.prototype.drawPlanet = function (planet) {
         var radious = 1 + Math.pow(planet.mass * MASS_SIZE_RATIO, 1 / 3);
@@ -198,6 +199,11 @@ var OrbitVisualizer = /** @class */ (function () {
     OrbitVisualizer.prototype.setSemiMajorAxis = function (semiMajorAxis) {
         this.setParameters(this.excentricity, semiMajorAxis);
     };
+    OrbitVisualizer.prototype.setSize = function (size) {
+        this.canvas.width = size;
+        this.canvas.height = size * 3 / 4;
+        this.barycenter = { x: this.canvas.width / 2, y: this.canvas.height / 2 };
+    };
     return OrbitVisualizer;
 }());
 function degrees_to_radians(degrees) {
@@ -223,6 +229,11 @@ planet1_image.onload = function () {
         excentricitySlider.oninput = function () {
             var excentricity = parseFloat(excentricitySlider.value);
             orbitVisualizer.setExcentricity(excentricity);
+        };
+        var semiMajorAxisSlider = document.getElementById("semi-major-axis-slider");
+        semiMajorAxisSlider.oninput = function () {
+            var semiMajorAxis = parseFloat(semiMajorAxisSlider.value);
+            orbitVisualizer.setSemiMajorAxis(semiMajorAxis);
         };
     };
 };

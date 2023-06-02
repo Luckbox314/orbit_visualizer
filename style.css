@@ -7,30 +7,30 @@ body {
     padding: 0;
     justify-content: center;
     align-items: center;
+    background-color: blue;
+    color: white;
+    font-family: 'Roboto', sans-serif;
 }
 
 .main-container {
-    width: min(100%, 500px); ;
-    background-color: aqua;
+    width: min(100%, 800px);
+    background-color: transparent;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
+
 }
 
 #canvas {
-    background-color: blue;
-    width: min(100%, 500px);
-    aspect-ratio: 1/1;
-}
-
-#debug-canvas {
-    background-color: white;
-    width: min(100%, 200px);
-    aspect-ratio: 1/1;
+    background-color: transparent;
+    width: min(100%, 800px);
+    aspect-ratio: 4/3;
 }
 
 .parameters {
     margin: 20px;
+    width: min(100%, 500px);
 }
 
 .input-bar {
@@ -39,3 +39,41 @@ body {
         width: 100%;
     }
 }
+
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 30px;
+    background: transparent;
+    outline: white solid 4px;
+    border-radius: 15px;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+  }
+  
+  .slider:hover {
+    opacity: 1;
+  }
+  
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    background: white;
+    cursor: pointer;
+  }
+  
+  .slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    border-radius: 10px;
+    background: white;
+    cursor: pointer;
+  }
+
+  p {
+      color: white;
+  }

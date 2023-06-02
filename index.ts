@@ -3,7 +3,7 @@ planet1_image.src = "sprites/p1.svg";
 const planet2_image = new Image();
 planet2_image.src = "sprites/p2.svg";
 
-const MASS_SIZE_RATIO = 700;
+const MASS_SIZE_RATIO = 400;
 const OBJECTIVE_ORBITAL_PERIOD = 5;
 const GRAVITATIONAL_CONSTANT = 1;
 const AREA_STEPS = 100;
@@ -40,13 +40,15 @@ class OrbitVisualizer {
     private iteration: number;
 
     constructor() {
-        console.log("Initializing App");
+        // console.log("Initializing App");
 
         this.canvas = document.getElementById('canvas') as HTMLCanvasElement;
-        this.canvas.width = 1000;
-        this.canvas.height = 1000;
+        this.setSize(1500);
         let ctx = this.canvas.getContext("2d");
         this.ctx = ctx;
+        this.ctx.lineWidth = 6;
+        this.ctx.strokeStyle = "#ffffff";
+        this.ctx.fillStyle = "#ffffff";
 
         // this.debugCanvas = document.getElementById('debug-canvas') as HTMLCanvasElement;
         // this.debugCtx = this.debugCanvas.getContext("2d");
@@ -64,7 +66,6 @@ class OrbitVisualizer {
         };
 
         // initial conditions
-        this.barycenter = {x: this.canvas.width/2, y: this.canvas.width/2};
         this.timeSpeed = SPEED;
         this.angles_sample = Array() as [number];
 
@@ -73,8 +74,8 @@ class OrbitVisualizer {
             this.angles_sample.push(degrees_to_radians(i * 360 / AREA_STEPS));
         }
 
-        this.setParameters(0.5, 400);
-        console.log(this.area);
+        this.setParameters(0.5, 150);
+        // console.log(this.area);
 
         this.progress = 0
 
@@ -85,7 +86,7 @@ class OrbitVisualizer {
         // start animation
         this.time = Date.now();
         this.frame = 0;
-        console.log("initializing animation Loop");
+        // console.log("initializing animation Loop");
         this.iteration = 0;
         this.lastArea = 0;
         this.animationLoop();   
@@ -99,7 +100,7 @@ class OrbitVisualizer {
         this.angles_sample.forEach(angle => {
             this.areas.push(this.A(angle));
         });
-        console.log(this.areas);
+        // console.log(this.areas);
     }
 
     private drawPlanet(planet: Planet) {
@@ -282,6 +283,12 @@ class OrbitVisualizer {
         this.setParameters(this.excentricity, semiMajorAxis);
     }
 
+    public setSize(size) {
+        this.canvas.width = size ;
+        this.canvas.height = size * 3/4;
+        this.barycenter = {x: this.canvas.width/2, y: this.canvas.height/2};
+    }
+
 }
 
 
@@ -317,6 +324,12 @@ planet2_image.onload = () =>
     excentricitySlider.oninput = () => {
         const excentricity = parseFloat(excentricitySlider.value);
         orbitVisualizer.setExcentricity(excentricity);
+    }
+
+    const semiMajorAxisSlider = document.getElementById("semi-major-axis-slider") as HTMLInputElement;
+    semiMajorAxisSlider.oninput = () => {
+        const semiMajorAxis = parseFloat(semiMajorAxisSlider.value);
+        orbitVisualizer.setSemiMajorAxis(semiMajorAxis);
     }
 
 }
