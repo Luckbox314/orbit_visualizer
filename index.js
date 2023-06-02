@@ -17,8 +17,8 @@ var OrbitVisualizer = /** @class */ (function () {
         var ctx = this.canvas.getContext("2d");
         this.ctx = ctx;
         this.ctx.lineWidth = 6;
-        this.ctx.strokeStyle = "#ffffff";
-        this.ctx.fillStyle = "#ffffff";
+        this.ctx.strokeStyle = "#6400ff";
+        this.ctx.fillStyle = "#6400ff";
         // this.debugCanvas = document.getElementById('debug-canvas') as HTMLCanvasElement;
         // this.debugCtx = this.debugCanvas.getContext("2d");
         // planets
@@ -221,19 +221,27 @@ planet1_image.onload = function () {
     return planet2_image.onload = function () {
         var orbitVisualizer = new OrbitVisualizer();
         var massSlider = document.getElementById("mass-slider");
+        var massDisplay = document.getElementById("mass-display");
         massSlider.oninput = function () {
             var mass = parseFloat(massSlider.value);
             orbitVisualizer.setMassRatio(mass);
+            var ration1 = 1;
+            var ration2 = (50 - mass) / (50 + mass);
+            massDisplay.innerText = ration1 + " : " + ration2.toFixed(2);
         };
         var excentricitySlider = document.getElementById("excentricity-slider");
+        var excentricityDisplay = document.getElementById("excentricity-display");
         excentricitySlider.oninput = function () {
             var excentricity = parseFloat(excentricitySlider.value);
             orbitVisualizer.setExcentricity(excentricity);
+            excentricityDisplay.innerText = excentricity.toFixed(2);
         };
         var semiMajorAxisSlider = document.getElementById("semi-major-axis-slider");
+        var semiMayorAxisDisplay = document.getElementById("semi-major-axis-display");
         semiMajorAxisSlider.oninput = function () {
             var semiMajorAxis = parseFloat(semiMajorAxisSlider.value);
             orbitVisualizer.setSemiMajorAxis(semiMajorAxis);
+            semiMayorAxisDisplay.innerText = semiMajorAxis.toFixed(2);
         };
     };
 };
