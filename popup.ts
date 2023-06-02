@@ -33,4 +33,17 @@ window.addEventListener("load", () => {
             closePopUps(id);
         }
     });
+
+    window.addEventListener("touchstart", (event) => {
+        const target = event.target as HTMLElement;
+        if (! target.classList.contains("pop-up") && ! target.classList.contains("info")) {
+            closePopUps();
+        }
+
+        if (target.classList.contains("info")) {
+            const id = target.id.split("-")[0] + "-info";
+            closePopUps(id);
+        }
+    });
+
 });

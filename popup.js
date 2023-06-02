@@ -30,5 +30,15 @@ window.addEventListener("load", function () {
             closePopUps(id);
         }
     });
+    window.addEventListener("touchstart", function (event) {
+        var target = event.target;
+        if (!target.classList.contains("pop-up") && !target.classList.contains("info")) {
+            closePopUps();
+        }
+        if (target.classList.contains("info")) {
+            var id = target.id.split("-")[0] + "-info";
+            closePopUps(id);
+        }
+    });
 });
 //# sourceMappingURL=popup.js.map
