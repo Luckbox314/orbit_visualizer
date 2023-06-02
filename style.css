@@ -59,17 +59,17 @@ body {
   .slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 20px;
-    height: 20px;
-    border-radius: 10px;
+    width: 24px;
+    height: 24px;
+    border-radius: 12px;
     background: white;
     cursor: pointer;
   }
   
   .slider::-moz-range-thumb {
-    width: 25px;
-    height: 25px;
-    border-radius: 10px;
+    width: 24px;
+    height: 24px;
+    border-radius: 12px;
     background: white;
     cursor: pointer;
   }
