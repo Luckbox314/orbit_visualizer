@@ -306,14 +306,9 @@ function distance(a : {x:number, y:number}, b: {x:number, y:number}) {
     return Math.sqrt((a.x - b.x)**2 + (a.y - b.y)**2);
 }
 
-
-
-//wait for planets to load
-planet1_image.onload = () =>
-planet2_image.onload = () =>
+function main()
 {
     const orbitVisualizer = new OrbitVisualizer();
-
     const massSlider = document.getElementById("mass-slider") as HTMLInputElement;
     const massDisplay = document.getElementById("mass-display") as HTMLSpanElement;
     massSlider.oninput = () => {
@@ -339,7 +334,22 @@ planet2_image.onload = () =>
         orbitVisualizer.setSemiMajorAxis(semiMajorAxis);
         semiMayorAxisDisplay.innerText = semiMajorAxis.toFixed();
     }
+}
 
+
+let loaded = [false, false];
+//wait for planets to load
+planet1_image.onload = () => {
+    loaded[0] = true;
+    if (loaded[0] && loaded[1]) {
+        main();
+    }
+}
+planet2_image.onload = () => {
+    loaded[1] = true;
+    if (loaded[0] && loaded[1]) {
+        main();
+    }
 }
 
 
