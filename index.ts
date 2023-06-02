@@ -47,8 +47,8 @@ class OrbitVisualizer {
         let ctx = this.canvas.getContext("2d");
         this.ctx = ctx;
         this.ctx.lineWidth = 6;
-        this.ctx.strokeStyle = "#6400ff";
-        this.ctx.fillStyle = "#6400ff";
+        this.ctx.strokeStyle = "#625d80";
+        this.ctx.fillStyle = "#625d80";
 
         // this.debugCanvas = document.getElementById('debug-canvas') as HTMLCanvasElement;
         // this.debugCtx = this.debugCanvas.getContext("2d");
@@ -74,7 +74,7 @@ class OrbitVisualizer {
             this.angles_sample.push(degrees_to_radians(i * 360 / AREA_STEPS));
         }
 
-        this.setParameters(0.5, 150);
+        this.setParameters(0.5, 230);
         // console.log(this.area);
 
         this.progress = 0
@@ -337,7 +337,7 @@ planet2_image.onload = () =>
     semiMajorAxisSlider.oninput = () => {
         const semiMajorAxis = parseFloat(semiMajorAxisSlider.value);
         orbitVisualizer.setSemiMajorAxis(semiMajorAxis);
-        semiMayorAxisDisplay.innerText = semiMajorAxis.toFixed(2);
+        semiMayorAxisDisplay.innerText = semiMajorAxis.toFixed();
     }
 
 }
