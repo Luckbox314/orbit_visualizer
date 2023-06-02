@@ -7,6 +7,7 @@ const MASS_SIZE_RATIO = 700;
 const OBJECTIVE_ORBITAL_PERIOD = 5;
 const GRAVITATIONAL_CONSTANT = 1;
 const AREA_STEPS = 100;
+const SPEED = 60;
 
 
 interface Planet {
@@ -29,7 +30,7 @@ class OrbitVisualizer {
     private areas : [number];
     private angles_sample : [number];
     private area: number;
-    private area_progress: number;
+    private progress: number;
     private frame: number;
     private lastArea: number;
 
@@ -64,11 +65,7 @@ class OrbitVisualizer {
 
         // initial conditions
         this.barycenter = {x: this.canvas.width/2, y: this.canvas.width/2};
-        this.timeSpeed = 30;
-        this.excentricity = 0.5;
-        this.semiMajorAxis = 400;
-
-        this.areas = Array() as [number];
+        this.timeSpeed = SPEED;
         this.angles_sample = Array() as [number];
 
 
@@ -76,20 +73,10 @@ class OrbitVisualizer {
             this.angles_sample.push(degrees_to_radians(i * 360 / AREA_STEPS));
         }
 
-        this.angles_sample.forEach(angle => {
-            this.areas.push(this.A(angle));
-        });
-
-        console.log(this.angles_sample);
-        console.log(this.areas);
-
-        console.log("initializing graphing")
-
-
-        this.area = Math.round(this.semiMajorAxis**2 *  Math.sqrt(1 - this.excentricity**2) * Math.PI);
+        this.setParameters(0.5, 400);
         console.log(this.area);
 
-        this.area_progress = 0
+        this.progress = 0
 
         
 
@@ -102,6 +89,17 @@ class OrbitVisualizer {
         this.iteration = 0;
         this.lastArea = 0;
         this.animationLoop();   
+    }
+
+    private setParameters(excentricity: number, semiMajorAxis: number) {
+        this.excentricity = excentricity;
+        this.semiMajorAxis = semiMajorAxis;
+        this.area = Math.round(this.semiMajorAxis**2 *  Math.sqrt(1 - this.excentricity**2) * Math.PI);
+        this.areas = Array() as [number];
+        this.angles_sample.forEach(angle => {
+            this.areas.push(this.A(angle));
+        });
+        console.log(this.areas);
     }
 
     private drawPlanet(planet: Planet) {
@@ -125,9 +123,9 @@ class OrbitVisualizer {
         this.frame += dt;
         if (this.cachePos.x == 0 && this.cachePos.y == 0) {
             // Calculating next frame;
-            const angle = this.angle(this.area_progress);
-            this.area_progress += Math.round(this.area / AREA_STEPS);
-            if (this.area_progress > this.area) this.area_progress = 0;
+            const angle = this.angle(this.progress/100 * this.area);
+            this.progress += Math.round(100 / AREA_STEPS);
+            if (this.progress >= 100) this.progress = 0;
     
             this.cachePos.x = this.barycenter.x + this.r((angle)) * Math.cos((angle));
             this.cachePos.y = this.barycenter.y + this.r((angle)) * Math.sin((angle));
@@ -142,9 +140,10 @@ class OrbitVisualizer {
 
             if (this.cachePos.x == 0 && this.cachePos.y == 0) {
                 // Calculating next frame;
-                const angle = this.angle(this.area_progress);
-                this.area_progress += Math.round(this.area / AREA_STEPS);
-                if (this.area_progress > this.area) this.area_progress = 0;
+                const angle = this.angle(this.progress/100 * this.area);
+                
+                this.progress += Math.round(100 / AREA_STEPS);
+                if (this.progress >= 100) this.progress = 0;
         
                 this.cachePos.x = this.barycenter.x + this.r((angle)) * Math.cos((angle));
                 this.cachePos.y = this.barycenter.y + this.r((angle)) * Math.sin((angle));
@@ -157,7 +156,8 @@ class OrbitVisualizer {
             // console.log(`Angle: ${angle}`);
             this.planet1.position.x = this.cachePos.x;
             this.planet1.position.y = this.cachePos.y;
-            this.planet2.position = this.cachePos2;
+            this.planet2.position.x = this.cachePos2.x;
+            this.planet2.position.y = this.cachePos2.y;
             this.cachePos.x = 0;
             this.cachePos.y = 0;
         }
@@ -274,6 +274,14 @@ class OrbitVisualizer {
         this.planet2.mass = 50 - massRatio;
     }
 
+    public setExcentricity(excentricity) {
+        this.setParameters(excentricity, this.semiMajorAxis);
+    }
+
+    public setSemiMajorAxis(semiMajorAxis) {
+        this.setParameters(this.excentricity, semiMajorAxis);
+    }
+
 }
 
 
@@ -298,11 +306,19 @@ planet1_image.onload = () =>
 planet2_image.onload = () =>
 {
     const orbitVisualizer = new OrbitVisualizer();
+
     const massSlider = document.getElementById("mass-slider") as HTMLInputElement;
     massSlider.oninput = () => {
         const mass = parseFloat(massSlider.value);
         orbitVisualizer.setMassRatio(mass);
     }
+
+    const excentricitySlider = document.getElementById("excentricity-slider") as HTMLInputElement;
+    excentricitySlider.oninput = () => {
+        const excentricity = parseFloat(excentricitySlider.value);
+        orbitVisualizer.setExcentricity(excentricity);
+    }
+
 }
 
 

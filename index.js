@@ -6,9 +6,9 @@ var MASS_SIZE_RATIO = 700;
 var OBJECTIVE_ORBITAL_PERIOD = 5;
 var GRAVITATIONAL_CONSTANT = 1;
 var AREA_STEPS = 100;
+var SPEED = 60;
 var OrbitVisualizer = /** @class */ (function () {
     function OrbitVisualizer() {
-        var _this = this;
         this.cachePos = { x: 0, y: 0 };
         this.cachePos2 = { x: 0, y: 0 };
         console.log("Initializing App");
@@ -32,23 +32,14 @@ var OrbitVisualizer = /** @class */ (function () {
         };
         // initial conditions
         this.barycenter = { x: this.canvas.width / 2, y: this.canvas.width / 2 };
-        this.timeSpeed = 30;
-        this.excentricity = 0.5;
-        this.semiMajorAxis = 400;
-        this.areas = Array();
+        this.timeSpeed = SPEED;
         this.angles_sample = Array();
         for (var i = 0; i <= AREA_STEPS; i++) {
             this.angles_sample.push(degrees_to_radians(i * 360 / AREA_STEPS));
         }
-        this.angles_sample.forEach(function (angle) {
-            _this.areas.push(_this.A(angle));
-        });
-        console.log(this.angles_sample);
-        console.log(this.areas);
-        console.log("initializing graphing");
-        this.area = Math.round(Math.pow(this.semiMajorAxis, 2) * Math.sqrt(1 - Math.pow(this.excentricity, 2)) * Math.PI);
+        this.setParameters(0.5, 400);
         console.log(this.area);
-        this.area_progress = 0;
+        this.progress = 0;
         // start animation
         this.time = Date.now();
         this.frame = 0;
@@ -57,6 +48,17 @@ var OrbitVisualizer = /** @class */ (function () {
         this.lastArea = 0;
         this.animationLoop();
     }
+    OrbitVisualizer.prototype.setParameters = function (excentricity, semiMajorAxis) {
+        var _this = this;
+        this.excentricity = excentricity;
+        this.semiMajorAxis = semiMajorAxis;
+        this.area = Math.round(Math.pow(this.semiMajorAxis, 2) * Math.sqrt(1 - Math.pow(this.excentricity, 2)) * Math.PI);
+        this.areas = Array();
+        this.angles_sample.forEach(function (angle) {
+            _this.areas.push(_this.A(angle));
+        });
+        console.log(this.areas);
+    };
     OrbitVisualizer.prototype.drawPlanet = function (planet) {
         var radious = 1 + Math.pow(planet.mass * MASS_SIZE_RATIO, 1 / 3);
         this.ctx.drawImage(planet.img, planet.position.x - radious, planet.position.y - radious, 2 * radious, 2 * radious);
@@ -67,10 +69,10 @@ var OrbitVisualizer = /** @class */ (function () {
         this.frame += dt;
         if (this.cachePos.x == 0 && this.cachePos.y == 0) {
             // Calculating next frame;
-            var angle = this.angle(this.area_progress);
-            this.area_progress += Math.round(this.area / AREA_STEPS);
-            if (this.area_progress > this.area)
-                this.area_progress = 0;
+            var angle = this.angle(this.progress / 100 * this.area);
+            this.progress += Math.round(100 / AREA_STEPS);
+            if (this.progress >= 100)
+                this.progress = 0;
             this.cachePos.x = this.barycenter.x + this.r((angle)) * Math.cos((angle));
             this.cachePos.y = this.barycenter.y + this.r((angle)) * Math.sin((angle));
             this.cachePos2.x = this.barycenter.x - this.r((angle)) * this.planet1.mass / this.planet2.mass * Math.cos((angle));
@@ -81,10 +83,10 @@ var OrbitVisualizer = /** @class */ (function () {
             this.frame = 0;
             if (this.cachePos.x == 0 && this.cachePos.y == 0) {
                 // Calculating next frame;
-                var angle = this.angle(this.area_progress);
-                this.area_progress += Math.round(this.area / AREA_STEPS);
-                if (this.area_progress > this.area)
-                    this.area_progress = 0;
+                var angle = this.angle(this.progress / 100 * this.area);
+                this.progress += Math.round(100 / AREA_STEPS);
+                if (this.progress >= 100)
+                    this.progress = 0;
                 this.cachePos.x = this.barycenter.x + this.r((angle)) * Math.cos((angle));
                 this.cachePos.y = this.barycenter.y + this.r((angle)) * Math.sin((angle));
                 this.cachePos2.x = this.barycenter.x - this.r((angle)) * this.planet1.mass / this.planet2.mass * Math.cos((angle));
@@ -93,7 +95,8 @@ var OrbitVisualizer = /** @class */ (function () {
             // console.log(`Angle: ${angle}`);
             this.planet1.position.x = this.cachePos.x;
             this.planet1.position.y = this.cachePos.y;
-            this.planet2.position = this.cachePos2;
+            this.planet2.position.x = this.cachePos2.x;
+            this.planet2.position.y = this.cachePos2.y;
             this.cachePos.x = 0;
             this.cachePos.y = 0;
         }
@@ -189,6 +192,12 @@ var OrbitVisualizer = /** @class */ (function () {
         this.planet1.mass = 50 + massRatio;
         this.planet2.mass = 50 - massRatio;
     };
+    OrbitVisualizer.prototype.setExcentricity = function (excentricity) {
+        this.setParameters(excentricity, this.semiMajorAxis);
+    };
+    OrbitVisualizer.prototype.setSemiMajorAxis = function (semiMajorAxis) {
+        this.setParameters(this.excentricity, semiMajorAxis);
+    };
     return OrbitVisualizer;
 }());
 function degrees_to_radians(degrees) {
@@ -209,6 +218,11 @@ planet1_image.onload = function () {
         massSlider.oninput = function () {
             var mass = parseFloat(massSlider.value);
             orbitVisualizer.setMassRatio(mass);
+        };
+        var excentricitySlider = document.getElementById("excentricity-slider");
+        excentricitySlider.oninput = function () {
+            var excentricity = parseFloat(excentricitySlider.value);
+            orbitVisualizer.setExcentricity(excentricity);
         };
     };
 };
