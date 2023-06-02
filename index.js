@@ -9,9 +9,9 @@ var AREA_STEPS = 100;
 var SPEED = 60;
 var OrbitVisualizer = /** @class */ (function () {
     function OrbitVisualizer() {
-        // console.log("Initializing App");
         this.cachePos = { x: 0, y: 0 };
         this.cachePos2 = { x: 0, y: 0 };
+        console.log("Initializing App");
         this.canvas = document.getElementById('canvas');
         this.setSize(1500);
         var ctx = this.canvas.getContext("2d");
@@ -216,33 +216,31 @@ function radians_to_degrees(radians) {
 function distance(a, b) {
     return Math.sqrt(Math.pow((a.x - b.x), 2) + Math.pow((a.y - b.y), 2));
 }
-//wait for planets to load
-planet1_image.onload = function () {
-    return planet2_image.onload = function () {
-        var orbitVisualizer = new OrbitVisualizer();
-        var massSlider = document.getElementById("mass-slider");
-        var massDisplay = document.getElementById("mass-display");
-        massSlider.oninput = function () {
-            var mass = parseFloat(massSlider.value);
-            orbitVisualizer.setMassRatio(mass);
-            var ration1 = 1;
-            var ration2 = (50 - mass) / (50 + mass);
-            massDisplay.innerText = ration1 + " : " + ration2.toFixed(2);
-        };
-        var excentricitySlider = document.getElementById("excentricity-slider");
-        var excentricityDisplay = document.getElementById("excentricity-display");
-        excentricitySlider.oninput = function () {
-            var excentricity = parseFloat(excentricitySlider.value);
-            orbitVisualizer.setExcentricity(excentricity);
-            excentricityDisplay.innerText = excentricity.toFixed(2);
-        };
-        var semiMajorAxisSlider = document.getElementById("semi-major-axis-slider");
-        var semiMayorAxisDisplay = document.getElementById("semi-major-axis-display");
-        semiMajorAxisSlider.oninput = function () {
-            var semiMajorAxis = parseFloat(semiMajorAxisSlider.value);
-            orbitVisualizer.setSemiMajorAxis(semiMajorAxis);
-            semiMayorAxisDisplay.innerText = semiMajorAxis.toFixed();
-        };
+function main() {
+    var orbitVisualizer = new OrbitVisualizer();
+    var massSlider = document.getElementById("mass-slider");
+    var massDisplay = document.getElementById("mass-display");
+    massSlider.oninput = function () {
+        var mass = parseFloat(massSlider.value);
+        orbitVisualizer.setMassRatio(mass);
+        var ration1 = 1;
+        var ration2 = (50 - mass) / (50 + mass);
+        massDisplay.innerText = ration1 + " : " + ration2.toFixed(2);
     };
-};
+    var excentricitySlider = document.getElementById("excentricity-slider");
+    var excentricityDisplay = document.getElementById("excentricity-display");
+    excentricitySlider.oninput = function () {
+        var excentricity = parseFloat(excentricitySlider.value);
+        orbitVisualizer.setExcentricity(excentricity);
+        excentricityDisplay.innerText = excentricity.toFixed(2);
+    };
+    var semiMajorAxisSlider = document.getElementById("semi-major-axis-slider");
+    var semiMayorAxisDisplay = document.getElementById("semi-major-axis-display");
+    semiMajorAxisSlider.oninput = function () {
+        var semiMajorAxis = parseFloat(semiMajorAxisSlider.value);
+        orbitVisualizer.setSemiMajorAxis(semiMajorAxis);
+        semiMayorAxisDisplay.innerText = semiMajorAxis.toFixed();
+    };
+}
+window.addEventListener("load", function () { console.log("loaded"); main(); });
 //# sourceMappingURL=index.js.map

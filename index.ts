@@ -40,7 +40,7 @@ class OrbitVisualizer {
     private iteration: number;
 
     constructor() {
-        // console.log("Initializing App");
+        console.log("Initializing App");
 
         this.canvas = document.getElementById('canvas') as HTMLCanvasElement;
         this.setSize(1500);
@@ -336,20 +336,6 @@ function main()
     }
 }
 
-
-let loaded = [false, false];
-//wait for planets to load
-planet1_image.onload = () => {
-    loaded[0] = true;
-    if (loaded[0] && loaded[1]) {
-        main();
-    }
-}
-planet2_image.onload = () => {
-    loaded[1] = true;
-    if (loaded[0] && loaded[1]) {
-        main();
-    }
-}
+window.addEventListener("load", () => {console.log("loaded"); main()});
 
 
