@@ -15,21 +15,28 @@
         </canvas>
         <div class="parameters">
             <div class="input-bar">
-                <p>Mass relation <span id="mass-display">1 : 1.00</span></p> 
+                <p>Mass ratio <span id="mass-display">1 : 1.00</span> <img id= "mass-btn" class="info" src="sprites/info.svg" height="20px" style="margin: 0 3px -3px;"/></p> 
                 <input type="range" min="-49" max="0" value="0" class="slider" id="mass-slider">
+                <div style="display: none;" class="pop-up" id="mass-info"> The ratio between the lighter planet's mass and the heavier one. For example, if the ratio is 1:50, then the red planet has 50 times the mass of the blue planet</div>
             </div>
             <div class="input-bar">
-                <p>Excentricity <span id="excentricity-display">0.5</span></p>
-                <input type="range" min="0" max="0.9" value="0.5" step="0.05" class="slider" id="excentricity-slider">
+                <p>Excentricity <span id="excentricity-display">0.50</span> <img id= "excentricity-btn" class="info" src="sprites/info.svg" height="20px" style="margin: 0 3px -3px;"/></p>
+                <input type="range" min="0" max="0.9" value="0.50" step="0.05" class="slider" id="excentricity-slider">
+                <div style="display: none;" class="pop-up" id="excentricity-info"> 
+                    The eccentricity of an orbit is a measure of how elongated or stretched out the shape of the orbit is. It is a dimensionless quantity that ranges from 0 to 1
+                    where 0 is a perfect circle and 1 is a straight line.
+                </div>
             </div>
             <div class="input-bar">
-                <p>Semi-major axis <span id="semi-major-axis-display">230</span></p>
-                <input type="range" min="100" max="300" value="230" class="slider" id="semi-major-axis-slider">
+                <p>Semi-major axis <span id="semimajor-display">230</span> <img id= "semimajor-btn" class="info" src="sprites/info.svg" height="20px" style="margin: 0 3px -3px;"/></p>
+                <input type="range" min="100" max="300" value="230" class="slider" id="semimajor-slider">
+                <div style="display: none;" class="pop-up" id="semimajor-info"> The semi-major axis determines the period of the orbit, as well as the overall shape and size of the ellipse. In this case it affects the shape of the orbit of the blue planet. It corresponds to the distance from the center of the orbit to the furthest point.</div>
             </div>
         </div>
     </div>
     <script src="index.js"></script>
     <script src="stars.js"></script>
+    <script src="popup.js"></script>
     <footer>
         <a target='_blank' href="https://github.com/Luckbox314/orbit_visualizer"><img className="socialMediaLogo" src="sprites/github.svg" alt='GitHub' height="40"/></a>
         <a target='_blank' href="https://luckbox314.github.io/luckbox314/">By Luckbox</a>

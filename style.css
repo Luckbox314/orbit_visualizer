@@ -34,6 +34,7 @@ body {
 }
 
 .input-bar {
+    position: relative;
     padding: 10px 20px 0px;
     > input {
         width: 100%;
@@ -91,6 +92,10 @@ body {
     font-size: large;
     text-decoration: none;
     color: white;
+}
+
+.info {
+    cursor: pointer;
 }
 
 @media screen and (max-width: 650px) {
@@ -151,5 +156,19 @@ body {
   
  }
 
+
+.pop-up {
+  padding: 20px;
+  z-index: 2;
+  font-size: larger;
+  box-sizing: border-box;
+  position: absolute;
+  top: 52px;
+  left: 0px;
+  width: 100%;
+  background-color: aliceblue;
+  color: #1a1824;
+  border-radius: 10px;
+ }
 
   

@@ -60,7 +60,6 @@ var OrbitVisualizer = /** @class */ (function () {
             _this.areas.push(_this.A(angle));
         });
         var semiMajorAxisGeneral = this.semiMajorAxis + this.semiMajorAxis * this.planet1.mass / this.planet2.mass;
-        console.log(semiMajorAxisGeneral);
         this.timeSpeed = SPEED / (Math.pow((semiMajorAxisGeneral / 460), 1.5));
         // console.log(this.timeSpeed);
         // console.log(this.areas);
@@ -198,7 +197,6 @@ var OrbitVisualizer = /** @class */ (function () {
         this.planet1.mass = 50 + massRatio;
         this.planet2.mass = 50 - massRatio;
         var semiMajorAxisGeneral = this.semiMajorAxis + this.semiMajorAxis * this.planet1.mass / this.planet2.mass;
-        console.log(semiMajorAxisGeneral);
         this.timeSpeed = SPEED / (Math.pow((semiMajorAxisGeneral / 460), 1.5));
     };
     OrbitVisualizer.prototype.setExcentricity = function (excentricity) {
@@ -242,8 +240,8 @@ function main() {
         orbitVisualizer.setExcentricity(excentricity);
         excentricityDisplay.innerText = excentricity.toFixed(2);
     };
-    var semiMajorAxisSlider = document.getElementById("semi-major-axis-slider");
-    var semiMayorAxisDisplay = document.getElementById("semi-major-axis-display");
+    var semiMajorAxisSlider = document.getElementById("semimajor-slider");
+    var semiMayorAxisDisplay = document.getElementById("semimajor-display");
     semiMajorAxisSlider.oninput = function () {
         var semiMajorAxis = parseFloat(semiMajorAxisSlider.value);
         orbitVisualizer.setSemiMajorAxis(semiMajorAxis);
