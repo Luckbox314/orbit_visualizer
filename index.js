@@ -8,6 +8,9 @@ var GRAVITATIONAL_CONSTANT = 1;
 var AREA_STEPS = 100;
 var SPEED = 60;
 var OrbitVisualizer = /** @class */ (function () {
+    // private debugCanvas: HTMLCanvasElement;
+    // private debugCtx: CanvasRenderingContext2D;
+    // private iteration: number;
     function OrbitVisualizer() {
         this.cachePos = { x: 0, y: 0 };
         this.cachePos2 = { x: 0, y: 0 };
@@ -45,7 +48,6 @@ var OrbitVisualizer = /** @class */ (function () {
         this.time = Date.now();
         this.frame = 0;
         // console.log("initializing animation Loop");
-        this.iteration = 0;
         this.lastArea = 0;
         this.animationLoop();
     }
@@ -172,8 +174,6 @@ var OrbitVisualizer = /** @class */ (function () {
         this.simulation(dt);
         this.draw();
         window.requestAnimationFrame(function () { return _this.animationLoop(); });
-    };
-    OrbitVisualizer.prototype.update = function () {
     };
     // private graph(data: Array<number>) {
     //     console.log("graphing");

@@ -37,7 +37,7 @@ class OrbitVisualizer {
     // private debugCanvas: HTMLCanvasElement;
     // private debugCtx: CanvasRenderingContext2D;
 
-    private iteration: number;
+    // private iteration: number;
 
     constructor() {
         console.log("Initializing App");
@@ -87,7 +87,6 @@ class OrbitVisualizer {
         this.time = Date.now();
         this.frame = 0;
         // console.log("initializing animation Loop");
-        this.iteration = 0;
         this.lastArea = 0;
         this.animationLoop();   
     }
@@ -248,10 +247,6 @@ class OrbitVisualizer {
         this.simulation(dt);
         this.draw();
         window.requestAnimationFrame(() => this.animationLoop());
-    }
-
-    private update() {
-
     }
 
     // private graph(data: Array<number>) {
